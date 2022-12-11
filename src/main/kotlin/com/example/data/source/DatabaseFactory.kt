@@ -1,16 +1,15 @@
 package com.example.data.source
 
+import com.example.data.dao.DaoInterface
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.transactions.transaction
+import java.sql.Statement
 
-object DatabaseFactory {
+object DatabaseFactory: DaoInterface {
 
     const val DB_NAME = "bdata"
 
-    fun hikari(): HikariDataSource {
+    override fun hikari(): HikariDataSource {
         val config = HikariConfig()
         config.driverClassName = System.getenv("JDBC_DRIVER") // 1
         config.jdbcUrl = System.getenv("DATABASE_URL") // 2
@@ -20,6 +19,10 @@ object DatabaseFactory {
         config.validate()
 
         return HikariDataSource(config)
+    }
+
+    override fun connect(): Statement {
+       return this.hikari().connection.createStatement()
     }
 
 }

@@ -1,11 +1,10 @@
 package com.example.domain.use_case
 
-import com.example.data.repository.Repository
+import com.example.domain.interfaces.repository.RepositoryInterface
 
 class GetTable(
-    private val repository: Repository = Repository()
+    private val repository: RepositoryInterface
 ) {
-    suspend fun invoke(): String{
-        return repository.getTable()
-    }
+    suspend fun invoke() = repository.getTable()
+
 }

@@ -1,6 +1,8 @@
 package com.example.domain.routing
 
-import com.example.domain.use_case.UseCases
+import com.example.data.repository.Repository
+import com.example.data.source.DatabaseFactory
+import com.example.domain.use_case.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -8,7 +10,12 @@ import io.ktor.server.routing.*
 
 fun Application.tableRouting() {
 
-    val useCases = UseCases()
+    val repository = Repository(DatabaseFactory)
+
+    val useCases = UseCases(
+        sendQuery = SendQuery(repository),
+        getTable = GetTable(repository)
+    )
 
     routing {
         get("/table") {

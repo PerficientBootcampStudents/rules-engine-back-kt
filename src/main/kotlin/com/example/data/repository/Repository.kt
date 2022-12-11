@@ -1,18 +1,19 @@
 package com.example.data.repository
 
+import com.example.data.dao.DaoInterface
 import com.example.data.source.DatabaseFactory
 import com.example.domain.model.Column
 import com.example.domain.model.Table
-import com.example.domain.repository.RepositoryInterface
+import com.example.domain.interfaces.repository.RepositoryInterface
 import com.google.gson.Gson
 import com.zaxxer.hikari.HikariDataSource
 import java.sql.ResultSet
 
 class Repository(
-    private val database: HikariDataSource = DatabaseFactory.hikari()
+    private val database: DaoInterface
 ): RepositoryInterface {
 
-    private val st = database.connection.createStatement()
+    private val st = database.connect()
     private val _DBNAME = DatabaseFactory.DB_NAME
 
     override suspend fun getTable(): String {
