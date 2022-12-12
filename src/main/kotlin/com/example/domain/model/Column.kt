@@ -1,6 +1,6 @@
 package com.example.domain.model
 
 data class Column(
-    val type: Int,
-    val array: ArrayList<Any> = ArrayList()
+    val type: String,
+    val name: String,
 )
