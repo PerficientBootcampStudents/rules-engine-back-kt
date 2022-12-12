@@ -5,7 +5,6 @@ import com.example.data.source.DatabaseFactory
 import com.example.domain.model.Column
 import com.example.domain.model.Table
 import com.example.domain.interfaces.repository.RepositoryInterface
-import com.example.domain.model.Tuple
 import com.google.gson.Gson
 import io.ktor.http.*
 import java.sql.ResultSet
@@ -29,13 +28,15 @@ class Repository(
 
             for (i in 1..LIMIT) {
                 if (rs.next()) {
-                    val tuple = Tuple()
+                    val tuple: MutableMap<String, Any> = mutableMapOf()
 
                     for (j in 1..amountColumn) {
-                        tuple.data[rs.metaData.getColumnName(j)] = rs.getObject(j)
+                        tuple[rs.metaData.getColumnName(j)] = rs.getObject(j)
                     }
 
                     table.tuples.add(tuple)
+                }else{
+                    break
                 }
             }
 
