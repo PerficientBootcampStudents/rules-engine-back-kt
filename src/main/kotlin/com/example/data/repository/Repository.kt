@@ -2,12 +2,10 @@ package com.example.data.repository
 
 import com.example.data.dao.DaoInterface
 import com.example.data.source.DatabaseFactory
-import com.example.domain.model.Column
 import com.example.domain.model.Table
 import com.example.domain.interfaces.repository.RepositoryInterface
 import com.google.gson.Gson
 import io.ktor.http.*
-import java.sql.ResultSet
 
 class Repository(
     database: DaoInterface
@@ -22,7 +20,7 @@ class Repository(
     override suspend fun getTable(): String {
         val rs = st.executeQuery("SELECT * FROM $DBNAME")
         val amountColumn = rs.metaData.columnCount
-        val table = createSchema(amountColumn, rs)
+        val table = Table()
 
         return if (amountColumn > 0) {
 
@@ -31,7 +29,7 @@ class Repository(
                     val tuple: MutableMap<String, Any> = mutableMapOf()
 
                     for (j in 1..amountColumn) {
-                        tuple[rs.metaData.getColumnName(j)] = rs.getObject(j)
+                        tuple[rs.metaData.getColumnName(j)] = rs.getObject(j).toString()
                     }
 
                     table.tuples.add(tuple)
@@ -48,19 +46,5 @@ class Repository(
 
     }
 
-    private fun createSchema(amountColumn: Int, rs: ResultSet): Table {
-        val auxTable = Table(DBNAME)
-
-        for (i in 1..amountColumn) {
-            auxTable.columns.add(
-                Column(
-                    rs.metaData.getColumnTypeName(i),
-                    rs.metaData.getColumnName(i)
-                )
-            )
-        }
-
-        return auxTable
-    }
-
 }
+
