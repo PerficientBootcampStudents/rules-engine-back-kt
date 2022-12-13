@@ -2,54 +2,49 @@ package com.example.data.repository
 
 import com.example.data.dao.DaoInterface
 import com.example.data.source.DatabaseFactory
-import com.example.domain.model.Column
 import com.example.domain.model.Table
 import com.example.domain.interfaces.repository.RepositoryInterface
 import com.google.gson.Gson
-import com.zaxxer.hikari.HikariDataSource
-import java.sql.ResultSet
+import io.ktor.http.*
 
 class Repository(
-    private val database: DaoInterface
+    database: DaoInterface
 ): RepositoryInterface {
 
     private val st = database.connect()
-    private val _DBNAME = DatabaseFactory.DB_NAME
+    companion object {
+        private const val DBNAME = DatabaseFactory.DB_NAME
+        private const val LIMIT = 10
+    }
 
     override suspend fun getTable(): String {
-        val rs = st.executeQuery("SELECT * FROM $_DBNAME")
+        val rs = st.executeQuery("SELECT * FROM $DBNAME")
         val amountColumn = rs.metaData.columnCount
-        val table = createSchema(amountColumn, rs)
+        val table = Table()
 
         return if (amountColumn > 0) {
 
-            while (rs.next()) {
-                for (i in 1..amountColumn) {
-                    val value = rs.getObject(i)
-                    table.columns[i - 1].array.add(value)
-                }
+            for (i in 1..LIMIT) {
+                if (rs.next()) {
+                    val tuple: MutableMap<String, Any> = mutableMapOf()
 
+                    for (j in 1..amountColumn) {
+                        tuple[rs.metaData.getColumnName(j)] = rs.getObject(j).toString()
+                    }
+
+                    table.tuples.add(tuple)
+                }else{
+                    break
+                }
             }
 
             Gson().toJson(table)
 
         } else {
-            "Table is empty"
+            HttpStatusCode.NotFound.toString()
         }
 
-    }
-
-    private fun createSchema(amountColumn: Int, rs: ResultSet): Table {
-        val auxTable = Table(_DBNAME)
-        val auxColumn = ArrayList<Column>()
-
-        for (i in 1..amountColumn) {
-            auxColumn.add(Column(rs.metaData.getColumnType(i)))
-        }
-
-        auxTable.columns = auxColumn
-
-        return auxTable
     }
 
 }
+
