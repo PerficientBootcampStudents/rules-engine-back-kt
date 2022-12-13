@@ -1,5 +1,6 @@
 package com.example
 
+import com.example.domain.routing.queryRouting
 import com.example.domain.routing.tableRouting
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -13,6 +14,7 @@ fun main() {
 }
 
 fun Application.module() {
+    queryRouting()
     tableRouting()
     configureSerialization()
     configureRouting()
