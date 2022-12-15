@@ -7,6 +7,7 @@ import com.example.domain.use_case.GetTable
 import com.example.domain.use_case.SendQuery
 import com.example.domain.use_case.UseCases
 import com.google.gson.Gson
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -24,7 +25,7 @@ fun Application.queryRouting() {
         post("/query") {
             var query = Gson().fromJson(call.receiveText(), Query::class.java)
             val response = useCases.sendQuery?.invoke(query.rule)
-            call.respondText(response!!)
+            call.respondText(response!!, ContentType.Application.Json)
 
         }
 
