@@ -13,14 +13,13 @@ fun Application.tableRouting() {
     val repository = Repository(DatabaseFactory)
 
     val useCases = UseCases(
-        sendQuery = SendQuery(repository),
         getTable = GetTable(repository)
     )
 
     routing {
         get("/table") {
-            val response = useCases.getTable.invoke()
-            call.respondText(response, ContentType.Application.Json)
+            val response = useCases.getTable?.invoke()
+            call.respondText(response!!, ContentType.Application.Json)
         }
     }
 }

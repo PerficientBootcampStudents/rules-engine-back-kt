@@ -5,6 +5,10 @@ import com.example.domain.interfaces.repository.RepositoryInterface
 class SendQuery(
     private val repository: RepositoryInterface
 ) {
-    //suspend fun invoke(query: String) = repository.sendQuery(query)
+    private val INIT_QUERY = "SELECT * FROM ${repository.dbName} WHERE "
+    suspend fun invoke(query: String): String {
+        val auxQuery = INIT_QUERY + query
+        return repository.sendQuery(auxQuery)
+    }
 
 }
